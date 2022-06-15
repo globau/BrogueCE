@@ -1,4 +1,7 @@
 #ifdef SDL_PATHS
+#include <libgen.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 #endif
 
@@ -252,6 +255,8 @@ static void _gameLoop() {
         fprintf(stderr, "Failed to find the path to the application\n");
         exit(1);
     }
+
+    /*
     free(path);
 
     path = SDL_GetPrefPath("Brogue", "Brogue CE");
@@ -259,6 +264,20 @@ static void _gameLoop() {
         fprintf(stderr, "Failed to find or change to the save directory\n");
         exit(1);
     }
+    */
+
+    // use a "Saves" directory at the same level as the .app
+    char *savesPath = dirname(dirname(dirname(path)));
+    strcat(savesPath, "/Saves");
+
+    // try to mkdir, ignore any errors
+    mkdir(savesPath, 0755);
+    if (chdir(savesPath) != 0) {
+        fprintf(stderr, "Failed to find or change to the save directory\n");
+        exit(1);
+    }
+
+    free(savesPath);
     free(path);
 #endif
 
