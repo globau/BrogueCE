@@ -16,3 +16,6 @@ BrogueCE-*
 *.gcov
 *.desktop
 gmon.out
+
+/Brogue.app/
+/Saves/

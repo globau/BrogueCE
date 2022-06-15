@@ -62,7 +62,7 @@ bin/brogue.exe: $(objects) windows/icon.o
 	mt -manifest windows/brogue.exe.manifest '-outputresource:bin/brogue.exe;1'
 
 clean:
-	$(RM) src/brogue/*.o src/platform/*.o windows/icon.o bin/brogue{,.exe}
+	rm -rf src/brogue/*.o src/platform/*.o windows/icon.o bin/brogue{,.exe} Brogue.app
 
 
 # Release archives
@@ -102,12 +102,21 @@ macos/Brogue.icns: icon_32.png icon_128.png icon_256.png icon_512.png
 	png2icns $@ $^
 	$(RM) $^
 
-Brogue.app: bin/brogue
+Brogue.app: bin/brogue macos/brogue macos/Info.plist
+	rm -rf $@
 	mkdir -p $@/Contents/{MacOS,Resources}
 	cp macos/Info.plist $@/Contents
-	cp bin/brogue $@/Contents/MacOS
+	cp macos/brogue $@/Contents/MacOS
+	cp bin/brogue $@/Contents/MacOS/brogueCE
 	cp -r macos/Brogue.icns bin/assets $@/Contents/Resources
+	dylibbundler --dest-dir $@/Contents/Frameworks --overwrite-dir --bundle-deps --fix-file $@/Contents/MacOS/brogueCE >/dev/null
+	codesign -s 'Byron Jones' $@
+	touch $@
 
 macos/sdl2.rb:
 	curl -L 'https://raw.githubusercontent.com/Homebrew/homebrew-core/master/Formula/sdl2.rb' >$@
 	patch $@ macos/sdl2-deployment-target.patch
+
+install: Brogue.app
+	rm -rf ~/Dropbox/games/Brogue/Brogue.app
+	mv Brogue.app ~/Dropbox/games/Brogue

@@ -1,5 +1,5 @@
 # Where to look for game data files (found in 'bin'). Must be without trailing slashes!
-DATADIR := .
+DATADIR := ../Resources
 
 # Include terminal support. Requires ncurses
 TERMINAL := NO
@@ -19,4 +19,4 @@ DEBUG := NO
 RELEASE := NO
 
 # Configure the executable to run from a macOS .app bundle (only works in graphical mode)
-MAC_APP := NO
+MAC_APP := YES
